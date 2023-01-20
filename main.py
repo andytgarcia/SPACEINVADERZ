@@ -79,6 +79,14 @@ def isOffScreen(x, y):
         return False
 
 
+def drawEvents():
+    for e in events:
+        while 1280 > e.rect.x > 0:
+            screen.blit(e.image, (1280, random.randrange(0, 670, 1)))
+            e.rect.x -= 1
+
+
+
 def handleBullets():
     for b in bullets:
         pygame.draw.circle(screen, b.color, (b.x, b.y), b.rad, 0)
@@ -116,6 +124,7 @@ while not gameOver:
             gameOver = True
 
     clearScreen()
+    createEvent()
     screen.blit(backdrop, [i, 0])
     screen.blit(backdrop, [worldx + i, 0])
     if i == -worldx:
@@ -125,5 +134,6 @@ while not gameOver:
     screen.blit(player.image, player.rect)
     playerMovement()
     handleBullets()
+    drawEvents()
 
     pygame.display.flip()
