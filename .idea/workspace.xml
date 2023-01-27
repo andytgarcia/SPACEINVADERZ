@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c5ab89e8-4e7d-4b54-8352-8b10dbb294c3" name="Changes" comment="draw powerups and figure out enemies">
-      <change afterPath="$PROJECT_DIR$/mystery.png" afterDir="false" />
+    <list default="true" id="c5ab89e8-4e7d-4b54-8352-8b10dbb294c3" name="Changes" comment="put powerups on screen">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -74,7 +74,14 @@
       <option name="project" value="LOCAL" />
       <updated>1674251063550</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="put powerups on screen">
+      <created>1674251504200</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1674251504200</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -93,6 +100,7 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="work on emeies and bullet handling" />
     <MESSAGE value="draw powerups and figure out enemies" />
-    <option name="LAST_COMMIT_MESSAGE" value="draw powerups and figure out enemies" />
+    <MESSAGE value="put powerups on screen" />
+    <option name="LAST_COMMIT_MESSAGE" value="put powerups on screen" />
   </component>
 </project>

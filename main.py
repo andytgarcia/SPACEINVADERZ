@@ -4,6 +4,7 @@ import random
 
 YELLOW = (255, 255, 0)
 
+
 ##fields for player: x position, y position
 
 class Player(pygame.sprite.Sprite):
@@ -13,6 +14,9 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.movey = 1
         self.nextShot = 0
+        self.spreadPower = False
+        self.rapidPower = False
+        self.triplePower = False
 
     def moveUp(self):
         if self.rect.y == 0:
@@ -36,7 +40,7 @@ class Bullet:
         self.rad = rad
         self.color = YELLOW
         self.xvel = xvel
-
+        self.rect = pygame.Rect(x - rad, y - rad, rad * 2, rad * 2)
 
 class Event(pygame.sprite.Sprite):
     def __init__(self, spreadShot, rapidFire, tripleBurst):
@@ -45,19 +49,27 @@ class Event(pygame.sprite.Sprite):
         self.spreadShot = spreadShot
         self.rapidFire = rapidFire
         self.tripleBurst = tripleBurst
-        self.rect = self.image.get_rect()
-
+        self.rect = self.image.get_rect(center = (1279, random.randint(1, 670)))
 
 
 def createEvent():
-    randNum = random.randrange(0, 100, 1)
+    randNum = random.randint(1, 100)
     if randNum < 20:
         if randNum % 3 == 0:
             events.append(Event(True, False, False))
+            print("event created")
+            return True
+
         elif randNum % 2 == 0:
             events.append(Event(False, False, True))
+            print("event created")
+            return True
+
         else:
             events.append(Event(False, True, False))
+            print("event created")
+            return True
+    return False
 
 
 def playerMovement():
@@ -69,7 +81,12 @@ def playerMovement():
 
     if keys[pygame.K_SPACE] and player.nextShot < time.time_ns():
         bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 5, 10))
-        player.nextShot = time.time_ns() + 1000000000/2
+        if not player.rapidPower:
+            player.nextShot = time.time_ns() + 1000000000 / 2
+
+
+
+
 
 
 def isOffScreen(x, y):
@@ -81,9 +98,14 @@ def isOffScreen(x, y):
 
 def drawEvents():
     for e in events:
-        while 1280 > e.rect.x > 0:
-            screen.blit(e.image, (1280, random.randrange(0, 670, 1)))
-            e.rect.x -= 1
+        screen.blit(e.image, e.rect)
+        print("event drawn")
+        e.rect.x += -1
+        print(e.rect.x)
+        if isOffScreen(e.rect.x, e.rect.y):
+            events.remove(e)
+            print("event removed")
+
 
 
 
@@ -94,6 +116,8 @@ def handleBullets():
         if isOffScreen(b.x, b.y):
             bullets.remove(b)
             print("bullet removed")
+
+
 
 
 def clearScreen():
@@ -110,6 +134,7 @@ screen = pygame.display.set_mode((worldx, worldy))
 gameOver = False
 grav = 1
 backdrop = pygame.image.load("spaceFinal.jpg").convert()
+nextTimeEvent = 0
 
 player = Player()
 player.rect.x = 50
@@ -124,7 +149,6 @@ while not gameOver:
             gameOver = True
 
     clearScreen()
-    createEvent()
     screen.blit(backdrop, [i, 0])
     screen.blit(backdrop, [worldx + i, 0])
     if i == -worldx:
@@ -134,6 +158,9 @@ while not gameOver:
     screen.blit(player.image, player.rect)
     playerMovement()
     handleBullets()
+    if nextTimeEvent < time.time():
+        if createEvent():
+            nextTimeEvent = time.time() + 5
     drawEvents()
 
     pygame.display.flip()
