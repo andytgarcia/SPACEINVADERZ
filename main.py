@@ -45,7 +45,7 @@ class Bullet:
 class Event(pygame.sprite.Sprite):
     def __init__(self, spreadShot, rapidFire, tripleBurst):
         super(Event, self).__init__()
-        self.image = pygame.image.load("mystery.png").convert()
+        self.image = pygame.image.load("mysteryBox2.jpg").convert()
         self.spreadShot = spreadShot
         self.rapidFire = rapidFire
         self.tripleBurst = tripleBurst
@@ -101,7 +101,6 @@ def drawEvents():
         screen.blit(e.image, e.rect)
         print("event drawn")
         e.rect.x += -1
-        print(e.rect.x)
         if isOffScreen(e.rect.x, e.rect.y):
             events.remove(e)
             print("event removed")
@@ -160,7 +159,7 @@ while not gameOver:
     handleBullets()
     if nextTimeEvent < time.time():
         if createEvent():
-            nextTimeEvent = time.time() + 5
+            nextTimeEvent = time.time() + 10
     drawEvents()
 
     pygame.display.flip()
