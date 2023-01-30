@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c5ab89e8-4e7d-4b54-8352-8b10dbb294c3" name="Changes" comment="fix powerups, handle firemodes, do enemies">
+    <list default="true" id="c5ab89e8-4e7d-4b54-8352-8b10dbb294c3" name="Changes" comment="handle firemodes, do enemies">
+      <change afterPath="$PROJECT_DIR$/mysteryBox2.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -88,7 +89,14 @@
       <option name="project" value="LOCAL" />
       <updated>1674845314285</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="handle firemodes, do enemies">
+      <created>1675107705935</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1675107705935</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -109,6 +117,7 @@
     <MESSAGE value="draw powerups and figure out enemies" />
     <MESSAGE value="put powerups on screen" />
     <MESSAGE value="fix powerups, handle firemodes, do enemies" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix powerups, handle firemodes, do enemies" />
+    <MESSAGE value="handle firemodes, do enemies" />
+    <option name="LAST_COMMIT_MESSAGE" value="handle firemodes, do enemies" />
   </component>
 </project>

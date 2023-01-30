@@ -51,13 +51,22 @@ class Event(pygame.sprite.Sprite):
         self.tripleBurst = tripleBurst
         self.rect = self.image.get_rect(center = (1279, random.randint(1, 670)))
 
+    def isSpreadPower(self):
+        return self.spreadShot
+
+    def isRapid(self):
+        return self.rapidFire
+
+    def isTriple(self):
+        return self.tripleBurst
+
 
 def createEvent():
     randNum = random.randint(1, 100)
     if randNum < 20:
         if randNum % 3 == 0:
             events.append(Event(True, False, False))
-            print("event created")
+            print("spreadshot created")
             return True
 
         elif randNum % 2 == 0:
@@ -89,6 +98,8 @@ def playerMovement():
 
 
 
+
+
 def isOffScreen(x, y):
     if x < 0 or x > 1280 or y < 0 or y > 720:
         return True
@@ -101,6 +112,20 @@ def drawEvents():
         screen.blit(e.image, e.rect)
         print("event drawn")
         e.rect.x += -1
+        if e.rect.colliderect(player.rect):
+            if e.isSpreadPower:
+                player.spreadPower = True
+                player.rapidPower = False
+                player.triplePower = False
+            elif e.isRapid:
+                player.rapidPower = True
+                player.spreadPower = False
+                player.triplePower = False
+            else:
+                player.triplePower = True
+                player.rapidPower = False
+                player.spreadPower = False
+            print("powered up!")
         if isOffScreen(e.rect.x, e.rect.y):
             events.remove(e)
             print("event removed")
