@@ -1,3 +1,5 @@
+import threading
+
 import pygame
 import time
 import random
@@ -16,7 +18,6 @@ class Player(pygame.sprite.Sprite):
         self.nextShot = 0
         self.spreadPower = False
         self.rapidPower = False
-        self.triplePower = False
 
     def moveUp(self):
         if self.rect.y == 0:
@@ -42,14 +43,14 @@ class Bullet:
         self.xvel = xvel
         self.rect = pygame.Rect(x - rad, y - rad, rad * 2, rad * 2)
 
+
 class Event(pygame.sprite.Sprite):
-    def __init__(self, spreadShot, rapidFire, tripleBurst):
+    def __init__(self, spreadShot, rapidFire):
         super(Event, self).__init__()
         self.image = pygame.image.load("mysteryBox2.jpg").convert()
         self.spreadShot = spreadShot
         self.rapidFire = rapidFire
-        self.tripleBurst = tripleBurst
-        self.rect = self.image.get_rect(center = (1279, random.randint(1, 670)))
+        self.rect = self.image.get_rect(center=(1279, random.randint(1, 670)))
 
     def isSpreadPower(self):
         return self.spreadShot
@@ -57,26 +58,17 @@ class Event(pygame.sprite.Sprite):
     def isRapid(self):
         return self.rapidFire
 
-    def isTriple(self):
-        return self.tripleBurst
-
 
 def createEvent():
     randNum = random.randint(1, 100)
     if randNum < 20:
-        if randNum % 3 == 0:
-            events.append(Event(True, False, False))
+        if randNum == 5:
+            events.append(Event(True, False))
             print("spreadshot created")
             return True
-
-        elif randNum % 2 == 0:
-            events.append(Event(False, False, True))
-            print("event created")
-            return True
-
         else:
-            events.append(Event(False, True, False))
-            print("event created")
+            events.append(Event(False, True))
+            print("rapid created")
             return True
     return False
 
@@ -89,15 +81,12 @@ def playerMovement():
         player.moveDown()
 
     if keys[pygame.K_SPACE] and player.nextShot < time.time_ns():
-        bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 5, 10))
+        if player.spreadPower:
+            bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 20, 10))
+        else:
+            bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 5, 10))
         if not player.rapidPower:
-            player.nextShot = time.time_ns() + 1000000000 / 2
-
-
-
-
-
-
+            player.nextShot = time.time_ns() + 10000000000 / 2
 
 
 def isOffScreen(x, y):
@@ -110,27 +99,24 @@ def isOffScreen(x, y):
 def drawEvents():
     for e in events:
         screen.blit(e.image, e.rect)
-        print("event drawn")
+        print("event drawing")
         e.rect.x += -1
         if e.rect.colliderect(player.rect):
-            if e.isSpreadPower:
+            if e.spreadShot:
                 player.spreadPower = True
                 player.rapidPower = False
-                player.triplePower = False
-            elif e.isRapid:
+            elif e.rapidFire:
                 player.rapidPower = True
                 player.spreadPower = False
-                player.triplePower = False
-            else:
-                player.triplePower = True
-                player.rapidPower = False
-                player.spreadPower = False
-            print("powered up!")
+            events.remove(e)
+            t1 = time.time() + 50
+            while time.time() < t1:
+                print("powered up")
+            player.rapidPower = False
+            player.spreadPower = False
         if isOffScreen(e.rect.x, e.rect.y):
             events.remove(e)
             print("event removed")
-
-
 
 
 def handleBullets():
@@ -140,8 +126,6 @@ def handleBullets():
         if isOffScreen(b.x, b.y):
             bullets.remove(b)
             print("bullet removed")
-
-
 
 
 def clearScreen():
@@ -184,7 +168,7 @@ while not gameOver:
     handleBullets()
     if nextTimeEvent < time.time():
         if createEvent():
-            nextTimeEvent = time.time() + 10
+            nextTimeEvent = time.time() + 100
     drawEvents()
 
     pygame.display.flip()
