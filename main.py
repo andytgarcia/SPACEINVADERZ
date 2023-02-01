@@ -59,6 +59,11 @@ class Event(pygame.sprite.Sprite):
         return self.rapidFire
 
 
+class Enemies(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        self.x = x
+
+
 def createEvent():
     randNum = random.randint(1, 100)
     if randNum < 20:
@@ -86,7 +91,7 @@ def playerMovement():
         else:
             bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 5, 10))
         if not player.rapidPower:
-            player.nextShot = time.time_ns() + 10000000000 / 2
+            player.nextShot = time.time_ns() + 1000000000 / 2
 
 
 def isOffScreen(x, y):
@@ -109,11 +114,6 @@ def drawEvents():
                 player.rapidPower = True
                 player.spreadPower = False
             events.remove(e)
-            t1 = time.time() + 50
-            while time.time() < t1:
-                print("powered up")
-            player.rapidPower = False
-            player.spreadPower = False
         if isOffScreen(e.rect.x, e.rect.y):
             events.remove(e)
             print("event removed")
@@ -168,7 +168,7 @@ while not gameOver:
     handleBullets()
     if nextTimeEvent < time.time():
         if createEvent():
-            nextTimeEvent = time.time() + 100
+            nextTimeEvent = time.time() + 20
     drawEvents()
 
     pygame.display.flip()
