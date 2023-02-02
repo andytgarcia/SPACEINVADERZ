@@ -16,6 +16,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.movey = 1
         self.nextShot = 0
+        self.normalFire = True
         self.spreadPower = False
         self.rapidPower = False
 
@@ -34,7 +35,7 @@ class Player(pygame.sprite.Sprite):
 
 
 class Bullet:
-    def __init__(self, x, y, rad, xvel):
+    def __init__(self, x, y, rad, xvel, damage):
         print("bullet made")
         self.x = x
         self.y = y
@@ -42,6 +43,10 @@ class Bullet:
         self.color = YELLOW
         self.xvel = xvel
         self.rect = pygame.Rect(x - rad, y - rad, rad * 2, rad * 2)
+        self.damage = damage
+
+
+
 
 
 class Event(pygame.sprite.Sprite):
@@ -62,12 +67,28 @@ class Event(pygame.sprite.Sprite):
 class Enemies(pygame.sprite.Sprite):
     def __init__(self, x, y):
         self.x = x
+        self.y = y
+        self.nextShot = 100000000000
+        self.health = 100
+        self.image = pygame.image.load("alien1.jpg").convert()
+        self.rect = self.image.get_rect(center = (1279, random.randint(1, 670)))
+
+    def drawEnemy(self):
+        screen.blit(self.image, self.rect)
+
+
+
+def createEnemies():
+    print("enemy created")
+
+
+
 
 
 def createEvent():
     randNum = random.randint(1, 100)
-    if randNum < 20:
-        if randNum == 5:
+    if randNum < 10:
+        if randNum % 2 == 1:
             events.append(Event(True, False))
             print("spreadshot created")
             return True
@@ -87,11 +108,13 @@ def playerMovement():
 
     if keys[pygame.K_SPACE] and player.nextShot < time.time_ns():
         if player.spreadPower:
-            bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 20, 10))
+            bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 20, 10, 50))
         else:
-            bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 5, 10))
+            bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 5, 10, 25))
         if not player.rapidPower:
             player.nextShot = time.time_ns() + 1000000000 / 2
+        else:
+            player.nextShot = time.time_ns() + 10000000
 
 
 def isOffScreen(x, y):
@@ -101,18 +124,26 @@ def isOffScreen(x, y):
         return False
 
 
-def drawEvents():
+def drawEvents(events):
     for e in events:
         screen.blit(e.image, e.rect)
         print("event drawing")
         e.rect.x += -1
         if e.rect.colliderect(player.rect):
             if e.spreadShot:
-                player.spreadPower = True
-                player.rapidPower = False
+                if not player.spreadPower:
+                    player.spreadPower = True
+                    player.rapidPower = False
+                else:
+                    player.spreadPower = False
+                    player.rapidPower = False
             elif e.rapidFire:
-                player.rapidPower = True
-                player.spreadPower = False
+                if not player.rapidPower:
+                    player.spreadPower = False
+                    player.rapidPower = True
+                else:
+                    player.rapidPower = False
+                    player.spreadPower = False
             events.remove(e)
         if isOffScreen(e.rect.x, e.rect.y):
             events.remove(e)
@@ -135,7 +166,7 @@ def clearScreen():
 # start of program
 pygame.init()  # start engine
 FPS = 60  # 60 frames per second
-fpsClock = pygame.time.Clock
+fpsClock = pygame.time.Clock()
 worldx = 1280
 worldy = 720
 screen = pygame.display.set_mode((worldx, worldy))
@@ -150,6 +181,8 @@ player.rect.y = 320
 i = 0
 bullets = []
 events = []
+enemies = []
+enemyBullet = []
 
 while not gameOver:
     for event in pygame.event.get():
@@ -169,6 +202,6 @@ while not gameOver:
     if nextTimeEvent < time.time():
         if createEvent():
             nextTimeEvent = time.time() + 20
-    drawEvents()
+    drawEvents(events)
 
     pygame.display.flip()
