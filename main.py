@@ -5,6 +5,7 @@ import time
 import random
 
 YELLOW = (255, 255, 0)
+currentTime = time.time()
 
 
 ##fields for player: x position, y position
@@ -64,7 +65,7 @@ class Event(pygame.sprite.Sprite):
         return self.rapidFire
 
 
-class Enemies(pygame.sprite.Sprite):
+class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -73,15 +74,19 @@ class Enemies(pygame.sprite.Sprite):
         self.image = pygame.image.load("alien1.jpg").convert()
         self.rect = self.image.get_rect(center = (1279, random.randint(1, 670)))
 
-    def drawEnemy(self):
-        screen.blit(self.image, self.rect)
 
 
 
-def createEnemies():
-    print("enemy created")
+
+def createEnemies(index):
+    randNum = random.randint(1, 100)
+    if randNum < index:
+        enemies.append(Enemy(1279, random.randint(1, 670)))
 
 
+def drawEnemies():
+    for en in enemies:
+        screen.blit(en.image, (en.x, en.y))
 
 
 
@@ -203,5 +208,7 @@ while not gameOver:
         if createEvent():
             nextTimeEvent = time.time() + 20
     drawEvents(events)
+    createEnemies(5)
+
 
     pygame.display.flip()
