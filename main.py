@@ -33,7 +33,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.y += 0
         else:
             self.rect.y += self.movey
-            print(self.rect.y)
+            # print(self.rect.y)
 
 
 class Bullet:
@@ -46,9 +46,6 @@ class Bullet:
         self.xvel = xvel
         self.rect = pygame.Rect(x - rad, y - rad, rad * 2, rad * 2)
         self.damage = damage
-
-
-
 
 
 class Event(pygame.sprite.Sprite):
@@ -73,51 +70,31 @@ class Enemy(pygame.sprite.Sprite):
         self.nextShot = 0
         self.health = 100
         self.image = pygame.image.load("alien1.jpg").convert()
-        self.rect = self.image.get_rect(center = (1279, random.randint(1, 670)))
+        self.rect = self.image.get_rect(center=(1279, random.randint(1, 670)))
         self.isAlive = True
-        
-        
-        
-        
+        self.bulletList = []
+
     def handleEnemy(self):
-        while self.isAlive:
-            if self.nextShot < time.time_ns():
-                pygame.draw.circle(screen, RED, (self.rect.x + 51, self.rect.y + 25), 5, 10)
-                
-                self.nextShot = time.time_ns() + 100000000000
-           
-        
-        
-                
-    
-            
-                
+        if self.nextShot < time.time_ns():
+            self.bulletList.append(Bullet(self.rect.x, self.rect.y, 5, -10, 34))
+            self.nextShot = time.time_ns() + 100000000000
 
-
-
-        
 
 def createEnemies(index):
     randNum = random.randint(1, 100)
     if randNum < index:
         enemies.append(Enemy(1279, random.randint(1, 670)))
         print("enemy created")
-        
+        return True
 
 
 def drawEnemies():
     for en in enemies:
-        screen.blit(en.image, (en.x, en.y))
-        while en.x != 1245:
-            en.x -= 1
+        screen.blit(en.image, en.rect)
+        while en.rect.x != 1200:
+            en.rect.x -= 1
         if not en.isAlive:
             enemies.remove(en)
-        
-        
-        
-
-
-
 
 def createEvent():
     randNum = random.randint(1, 100)
@@ -183,8 +160,8 @@ def drawEvents(events):
             print("event removed")
 
 
-def handleBullets():
-    for b in bullets:
+def handleBullets(bulletList):
+    for b in bulletList:
         pygame.draw.circle(screen, b.color, (b.x, b.y), b.rad, 0)
         b.x += b.xvel
         if isOffScreen(b.x, b.y):
@@ -207,6 +184,7 @@ gameOver = False
 grav = 1
 backdrop = pygame.image.load("spaceFinal.jpg").convert()
 nextTimeEvent = 0
+nextEnemyCreate = 0
 
 player = Player()
 player.rect.x = 50
@@ -215,7 +193,8 @@ i = 0
 bullets = []
 events = []
 enemies = []
-
+index = 5
+difficultyTime = 25.0
 
 while not gameOver:
     for event in pygame.event.get():
@@ -229,27 +208,21 @@ while not gameOver:
         screen.blit(backdrop, [worldx + i, 0])
         i = 0
     i -= 1
-    
-    
-    
+
     screen.blit(player.image, player.rect)
     playerMovement()
-    handleBullets()
-    
-    
-    
+    handleBullets(bullets)
+
     if nextTimeEvent < time.time():
         if createEvent():
             nextTimeEvent = time.time() + 20
     drawEvents(events)
-    
-    
-    createEnemies(1)
-    for e in enemies:
-        e.handleEnemy()
-    
-    
 
+    if nextEnemyCreate < time.time():
+        if createEnemies(index):
+            nextEnemyCreate = time.time() + difficultyTime
+            index += 1
+            difficultyTime -= 0.5
+        drawEnemies()
 
     pygame.display.flip()
-    fpsClock.tick(1440)
