@@ -5,6 +5,7 @@ import time
 import random
 
 YELLOW = (255, 255, 0)
+RED = (255, 0, 0)
 currentTime = time.time()
 
 
@@ -69,24 +70,52 @@ class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.nextShot = 100000000000
+        self.nextShot = 0
         self.health = 100
         self.image = pygame.image.load("alien1.jpg").convert()
         self.rect = self.image.get_rect(center = (1279, random.randint(1, 670)))
+        self.isAlive = True
+        
+        
+        
+        
+    def handleEnemy(self):
+        while self.isAlive:
+            if self.nextShot < time.time_ns():
+                pygame.draw.circle(screen, RED, (self.rect.x + 51, self.rect.y + 25), 5, 10)
+                
+                self.nextShot = time.time_ns() + 100000000000
+           
+        
+        
+                
+    
+            
+                
 
 
 
-
+        
 
 def createEnemies(index):
     randNum = random.randint(1, 100)
     if randNum < index:
         enemies.append(Enemy(1279, random.randint(1, 670)))
+        print("enemy created")
+        
 
 
 def drawEnemies():
     for en in enemies:
         screen.blit(en.image, (en.x, en.y))
+        while en.x != 1245:
+            en.x -= 1
+        if not en.isAlive:
+            enemies.remove(en)
+        
+        
+        
+
 
 
 
@@ -132,7 +161,6 @@ def isOffScreen(x, y):
 def drawEvents(events):
     for e in events:
         screen.blit(e.image, e.rect)
-        print("event drawing")
         e.rect.x += -1
         if e.rect.colliderect(player.rect):
             if e.spreadShot:
@@ -187,7 +215,7 @@ i = 0
 bullets = []
 events = []
 enemies = []
-enemyBullet = []
+
 
 while not gameOver:
     for event in pygame.event.get():
@@ -201,14 +229,27 @@ while not gameOver:
         screen.blit(backdrop, [worldx + i, 0])
         i = 0
     i -= 1
+    
+    
+    
     screen.blit(player.image, player.rect)
     playerMovement()
     handleBullets()
+    
+    
+    
     if nextTimeEvent < time.time():
         if createEvent():
             nextTimeEvent = time.time() + 20
     drawEvents(events)
-    createEnemies(5)
+    
+    
+    createEnemies(1)
+    for e in enemies:
+        e.handleEnemy()
+    
+    
 
 
     pygame.display.flip()
+    fpsClock.tick(1440)
