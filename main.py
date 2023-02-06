@@ -37,12 +37,12 @@ class Player(pygame.sprite.Sprite):
 
 
 class Bullet:
-    def __init__(self, x, y, rad, xvel, damage):
+    def __init__(self, x, y, rad, xvel, color, damage):
         print("bullet made")
         self.x = x
         self.y = y
         self.rad = rad
-        self.color = YELLOW
+        self.color = color
         self.xvel = xvel
         self.rect = pygame.Rect(x - rad, y - rad, rad * 2, rad * 2)
         self.damage = damage
@@ -74,10 +74,16 @@ class Enemy(pygame.sprite.Sprite):
         self.isAlive = True
         self.bulletList = []
 
-    def handleEnemy(self):
-        if self.nextShot < time.time_ns():
-            self.bulletList.append(Bullet(self.rect.x, self.rect.y, 5, -10, 34))
-            self.nextShot = time.time_ns() + 100000000000
+
+def handleEnemy():
+    for en in enemies:
+        if en.nextShot < time.time_ns():
+            en.bulletList.append(Bullet(en.rect.x + 51, en.rect.y + 25, 5, -10, RED, 34))
+            en.nextShot = time.time_ns() + 1000000000
+        if not en.isAlive:
+            enemies.remove(en)
+        handleBullets(en.bulletList)
+
 
 
 def createEnemies(index):
@@ -91,12 +97,9 @@ def createEnemies(index):
 def drawEnemies():
     for en in enemies:
         screen.blit(en.image, en.rect)
-        en.handleEnemy()
-        handleBullets(en.bulletList)
         while en.rect.x != 1200:
             en.rect.x -= 1
-        if not en.isAlive:
-            enemies.remove(en)
+
 
 def createEvent():
     randNum = random.randint(1, 100)
@@ -121,9 +124,9 @@ def playerMovement():
 
     if keys[pygame.K_SPACE] and player.nextShot < time.time_ns():
         if player.spreadPower:
-            bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 20, 10, 50))
+            bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 20, 10, YELLOW, 50))
         else:
-            bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 5, 10, 25))
+            bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 5, 10, YELLOW, 25))
         if not player.rapidPower:
             player.nextShot = time.time_ns() + 1000000000 / 2
         else:
@@ -167,7 +170,7 @@ def handleBullets(bulletList):
         pygame.draw.circle(screen, b.color, (b.x, b.y), b.rad, 0)
         b.x += b.xvel
         if isOffScreen(b.x, b.y):
-            bullets.remove(b)
+            bulletList.remove(b)
             print("bullet removed")
 
 
@@ -226,7 +229,6 @@ while not gameOver:
             index += 1
             difficultyTime -= 0.5
     drawEnemies()
-
-
+    handleEnemy()
 
     pygame.display.flip()
