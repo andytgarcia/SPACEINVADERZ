@@ -37,7 +37,7 @@ class Player(pygame.sprite.Sprite):
 
 
 class Bullet:
-    def __init__(self, x, y, rad, xvel, color, damage):
+    def __init__(self, x, y, rad, xvel, color, damage, owner):
         print("bullet made")
         self.x = x
         self.y = y
@@ -46,6 +46,7 @@ class Bullet:
         self.xvel = xvel
         self.rect = pygame.Rect(x - rad, y - rad, rad * 2, rad * 2)
         self.damage = damage
+        self.owner = owner
 
 
 class Event(pygame.sprite.Sprite):
@@ -80,6 +81,7 @@ def handleEnemy():
         if en.nextShot < time.time_ns():
             en.bulletList.append(Bullet(en.rect.x + 51, en.rect.y + 25, 5, -10, RED, 34))
             en.nextShot = time.time_ns() + 1000000000
+
         if not en.isAlive:
             enemies.remove(en)
         handleBullets(en.bulletList)
@@ -172,6 +174,7 @@ def handleBullets(bulletList):
         if isOffScreen(b.x, b.y):
             bulletList.remove(b)
             print("bullet removed")
+
 
 
 def clearScreen():
