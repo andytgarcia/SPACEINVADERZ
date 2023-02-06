@@ -91,6 +91,8 @@ def createEnemies(index):
 def drawEnemies():
     for en in enemies:
         screen.blit(en.image, en.rect)
+        en.handleEnemy()
+        handleBullets(en.bulletList)
         while en.rect.x != 1200:
             en.rect.x -= 1
         if not en.isAlive:
@@ -223,6 +225,8 @@ while not gameOver:
             nextEnemyCreate = time.time() + difficultyTime
             index += 1
             difficultyTime -= 0.5
-        drawEnemies()
+    drawEnemies()
+
+
 
     pygame.display.flip()
