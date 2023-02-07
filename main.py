@@ -21,6 +21,7 @@ class Player(pygame.sprite.Sprite):
         self.normalFire = True
         self.spreadPower = False
         self.rapidPower = False
+        self.health = 90
 
     def moveUp(self):
         if self.rect.y == 0:
@@ -70,7 +71,7 @@ class Enemy(pygame.sprite.Sprite):
         self.y = y
         self.nextShot = 0
         self.health = 100
-        self.image = pygame.image.load("alien1.jpg").convert()
+        self.image = pygame.image.load("invader.png").convert()
         self.rect = self.image.get_rect(center=(1279, random.randint(1, 670)))
         self.isAlive = True
         self.bulletList = []
@@ -79,7 +80,7 @@ class Enemy(pygame.sprite.Sprite):
 def handleEnemy():
     for en in enemies:
         if en.nextShot < time.time_ns():
-            en.bulletList.append(Bullet(en.rect.x + 51, en.rect.y + 25, 5, -10, RED, 34))
+            en.bulletList.append(Bullet(en.rect.x + 51, en.rect.y + 25, 5, -5, RED, 30, en))
             en.nextShot = time.time_ns() + 1000000000
 
         if not en.isAlive:
@@ -126,9 +127,9 @@ def playerMovement():
 
     if keys[pygame.K_SPACE] and player.nextShot < time.time_ns():
         if player.spreadPower:
-            bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 20, 10, YELLOW, 50))
+            bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 20, 10, YELLOW, 50, player))
         else:
-            bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 5, 10, YELLOW, 25))
+            bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 5, 10, YELLOW, 25, player))
         if not player.rapidPower:
             player.nextShot = time.time_ns() + 1000000000 / 2
         else:
@@ -171,6 +172,8 @@ def handleBullets(bulletList):
     for b in bulletList:
         pygame.draw.circle(screen, b.color, (b.x, b.y), b.rad, 0)
         b.x += b.xvel
+        if b.rect.colliderect(player.rect) and b.owner != player:
+            player.health -= b.damage
         if isOffScreen(b.x, b.y):
             bulletList.remove(b)
             print("bullet removed")
