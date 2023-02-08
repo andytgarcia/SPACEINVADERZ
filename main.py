@@ -6,7 +6,9 @@ import random
 
 YELLOW = (255, 255, 0)
 RED = (255, 0, 0)
+WHITE = (255, 255, 255)
 currentTime = time.time()
+gameState = "start"
 
 
 ##fields for player: x position, y position
@@ -172,11 +174,25 @@ def handleBullets(bulletList):
     for b in bulletList:
         pygame.draw.circle(screen, b.color, (b.x, b.y), b.rad, 0)
         b.x += b.xvel
-        if b.rect.colliderect(player.rect) and b.owner != player:
-            player.health -= b.damage
         if isOffScreen(b.x, b.y):
             bulletList.remove(b)
             print("bullet removed")
+
+
+def startScreen():
+    clearScreen()
+    screen.blit(backdrop, (0, 0))
+    textSurface = bigFont.render("SPACE INVADERZ", True, WHITE)
+    screen.blit(textSurface, (400, 200))
+    textSurface = littleFont.render("Press Space to Start Game!", True, WHITE)
+    screen.blit(textSurface, (500, 450))
+
+
+def checkStartScreenKeyPresses():
+    global gameState
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_SPACE]:
+        gameState = "playing"
 
 
 
@@ -186,6 +202,9 @@ def clearScreen():
 
 # start of program
 pygame.init()  # start engine
+pygame.font.init()
+bigFont = pygame.font.SysFont('Times New Roman', 50)
+littleFont = pygame.font.SysFont('Arial', 18)
 FPS = 60  # 60 frames per second
 fpsClock = pygame.time.Clock()
 worldx = 1280
@@ -212,29 +231,34 @@ while not gameOver:
         if event.type == pygame.QUIT:
             gameOver = True
 
-    clearScreen()
-    screen.blit(backdrop, [i, 0])
-    screen.blit(backdrop, [worldx + i, 0])
-    if i == -worldx:
+    if gameState == "start":
+        checkStartScreenKeyPresses()
+        startScreen()
+
+    if gameState == "playing":
+        clearScreen()
+        screen.blit(backdrop, [i, 0])
         screen.blit(backdrop, [worldx + i, 0])
-        i = 0
-    i -= 1
+        if i == -worldx:
+            screen.blit(backdrop, [worldx + i, 0])
+            i = 0
+        i -= 1
 
-    screen.blit(player.image, player.rect)
-    playerMovement()
-    handleBullets(bullets)
+        screen.blit(player.image, player.rect)
+        playerMovement()
+        handleBullets(bullets)
 
-    if nextTimeEvent < time.time():
-        if createEvent():
-            nextTimeEvent = time.time() + 20
-    drawEvents(events)
+        if nextTimeEvent < time.time():
+            if createEvent():
+                nextTimeEvent = time.time() + 20
+        drawEvents(events)
 
-    if nextEnemyCreate < time.time():
-        if createEnemies(index):
-            nextEnemyCreate = time.time() + difficultyTime
-            index += 1
-            difficultyTime -= 0.5
-    drawEnemies()
-    handleEnemy()
+        if nextEnemyCreate < time.time():
+            if createEnemies(index):
+                nextEnemyCreate = time.time() + difficultyTime
+                index += 1
+                difficultyTime -= 0.5
+        drawEnemies()
+        handleEnemy()
 
     pygame.display.flip()
