@@ -75,26 +75,25 @@ class Enemy(pygame.sprite.Sprite):
         self.health = 100
         self.image = pygame.image.load("invader.png").convert()
         self.rect = self.image.get_rect(center=(self.x, self.y))
-        #center=(1279, random.randint(1, 670))
+        # center=(1279, random.randint(1, 670))
         self.isAlive = True
         self.bulletList = []
-        
+
     def updateEnemyBullets(self):
         for b in self.bulletList:
             if b.rect.colliderect(player.rect) and b.owner == self:
                 self.bulletList.remove(b)
                 player.health -= b.damage
-                
-                
+
     def getRect(self):
         return self.rect
-    
+
     def setHealth(self, health):
         self.heath = health
-        
+
     def getHealth(self):
         return self.health
-        
+
     def setStatus(self, status):
         self.isAlive = status
 
@@ -109,9 +108,6 @@ def handleEnemy():
             enemies.remove(en)
         drawBullets(en.bulletList)
         en.updateEnemyBullets()
-        
-
-
 
 
 def createEnemies(index):
@@ -201,16 +197,17 @@ def drawBullets(bulletList):
             bulletList.remove(b)
             print("bullet removed")
 
+
 def updatePlayerBullets():
-    for en in enemies:
-        for b in bullets:
-            if b.rect.colliderect(en.rect):
+    for b in bullets:
+        for en in enemies:
+            if en.rect.colliderect(b.rect):
                 print("collision")
                 b.remove(b)
                 en.health = en.health - b.damage
                 if en.health <= 0:
                     en.isAlive = False
-    
+
 
 def startScreen():
     clearScreen()
@@ -226,7 +223,6 @@ def checkStartScreenKeyPresses():
     keys = pygame.key.get_pressed()
     if keys[pygame.K_SPACE]:
         gameState = "playing"
-
 
 
 def clearScreen():
@@ -269,9 +265,8 @@ while not gameOver:
         startScreen()
 
     if gameState == "playing":
-        
-        
-        #main game commands
+
+        # main game commands
         clearScreen()
         screen.blit(backdrop, [i, 0])
         screen.blit(backdrop, [worldx + i, 0])
@@ -279,19 +274,21 @@ while not gameOver:
             screen.blit(backdrop, [worldx + i, 0])
             i = 0
         i -= 1
-        #playerhandling
+
+        # playerhandling
         screen.blit(player.image, player.rect)
         playerMovement()
         drawBullets(bullets)
         updatePlayerBullets()
 
-        #event handling 
+
+        # event handling
         if nextTimeEvent < time.time():
             if createEvent():
                 nextTimeEvent = time.time() + 20
         drawEvents(events)
 
-        #enemy handling
+        # enemy handling
         if nextEnemyCreate < time.time():
             if createEnemies(index):
                 nextEnemyCreate = time.time() + difficultyTime
