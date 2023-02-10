@@ -128,7 +128,7 @@ def createEnemies(index):
 def drawEnemies():
     for en in enemies:
         screen.blit(en.image, en.rect)
-        while en.rect.x != 1200:
+        while en.rect.x != 1150:
             en.rect.x -= 1
 
 
@@ -260,8 +260,10 @@ i = 0
 bullets = []
 events = []
 enemies = []
-index = 5
+index = 30
 difficultyTime = 25.0
+counter = 5
+decTime = 2.5
 
 while not gameOver:
     for event in pygame.event.get():
@@ -300,8 +302,12 @@ while not gameOver:
         if nextEnemyCreate < time.time():
             if createEnemies(index):
                 nextEnemyCreate = time.time() + difficultyTime
-                index += 3
-                difficultyTime -= 0.5
+                index = index + counter
+                difficultyTime = difficultyTime - decTime
+                if index == 75:
+                    counter = 0
+                    decTime = 0
+                    
         drawEnemies()
         handleEnemy()
 
