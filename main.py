@@ -18,7 +18,7 @@ class Player(pygame.sprite.Sprite):
         super(Player, self).__init__()
         self.image = pygame.image.load("shipFinal.png").convert()
         self.rect = self.image.get_rect()
-        self.movey = 1
+        self.movey = 8
         self.nextShot = 0
         self.normalFire = True
         self.spreadPower = False
@@ -32,7 +32,8 @@ class Player(pygame.sprite.Sprite):
             self.rect.y -= self.movey
 
     def moveDown(self):
-        if self.rect.y == (720 - 50):
+        if self.rect.y == 660:
+            print("border!!!")
             self.rect.y += 0
         else:
             self.rect.y += self.movey
@@ -47,9 +48,12 @@ class Bullet:
         self.rad = rad
         self.color = color
         self.xvel = xvel
-        self.rect = pygame.Rect(x - rad, y - rad, rad * 2, rad * 2)
+        self.rect = pygame.Rect(self.x - self.rad, self.y - self.rad, self.rad * 2, self.rad * 2)
         self.damage = damage
         self.owner = owner
+
+    def drawBulletHurtBox(self):
+        pygame.draw.rect(screen, self.color, self.rect, 0)
 
 
 class Event(pygame.sprite.Sprite):
@@ -67,6 +71,8 @@ class Event(pygame.sprite.Sprite):
         return self.rapidFire
 
 
+
+
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         self.x = 1279
@@ -82,6 +88,7 @@ class Enemy(pygame.sprite.Sprite):
     def updateEnemyBullets(self):
         for b in self.bulletList:
             if b.rect.colliderect(player.rect) and b.owner == self:
+                print("collision")
                 self.bulletList.remove(b)
                 player.health -= b.damage
 
@@ -101,8 +108,8 @@ class Enemy(pygame.sprite.Sprite):
 def handleEnemy():
     for en in enemies:
         if en.nextShot < time.time_ns():
-            en.bulletList.append(Bullet(en.rect.x + 51, en.rect.y + 25, 5, -5, RED, 30, en))
-            en.nextShot = time.time_ns() + 1000000000
+            en.bulletList.append(Bullet(en.rect.x + 51, en.rect.y + 25, 5, -10, RED, 30, en))
+            en.nextShot = time.time_ns() + 10000000000/2
 
         if not en.isAlive:
             enemies.remove(en)
@@ -148,13 +155,13 @@ def playerMovement():
 
     if keys[pygame.K_SPACE] and player.nextShot < time.time_ns():
         if player.spreadPower:
-            bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 20, 10, YELLOW, 50, player))
+            bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 20, 15, YELLOW, 50, player))
         else:
             bullets.append(Bullet(player.rect.x + 51, player.rect.y + 25, 5, 10, YELLOW, 25, player))
         if not player.rapidPower:
             player.nextShot = time.time_ns() + 1000000000 / 2
         else:
-            player.nextShot = time.time_ns() + 10000000
+            player.nextShot = time.time_ns() + 100000000/2
 
 
 def isOffScreen(x, y):
@@ -167,7 +174,7 @@ def isOffScreen(x, y):
 def drawEvents(events):
     for e in events:
         screen.blit(e.image, e.rect)
-        e.rect.x += -1
+        e.rect.x += -7
         if e.rect.colliderect(player.rect):
             if e.spreadShot:
                 if not player.spreadPower:
@@ -193,6 +200,7 @@ def drawBullets(bulletList):
     for b in bulletList:
         pygame.draw.circle(screen, b.color, (b.x, b.y), b.rad, 0)
         b.x += b.xvel
+        b.rect.x += b.xvel
         if isOffScreen(b.x, b.y):
             bulletList.remove(b)
             print("bullet removed")
@@ -203,7 +211,7 @@ def updatePlayerBullets():
         for en in enemies:
             if en.rect.colliderect(b.rect):
                 print("collision")
-                b.remove(b)
+                bullets.remove(b)
                 en.health = en.health - b.damage
                 if en.health <= 0:
                     en.isAlive = False
@@ -242,8 +250,8 @@ screen = pygame.display.set_mode((worldx, worldy))
 gameOver = False
 grav = 1
 backdrop = pygame.image.load("spaceFinal.jpg").convert()
-nextTimeEvent = 0
-nextEnemyCreate = 0
+nextTimeEvent = time.time()
+nextEnemyCreate = time.time()
 
 player = Player()
 player.rect.x = 50
@@ -273,7 +281,7 @@ while not gameOver:
         if i == -worldx:
             screen.blit(backdrop, [worldx + i, 0])
             i = 0
-        i -= 1
+        i -= 2
 
         # playerhandling
         screen.blit(player.image, player.rect)
@@ -292,9 +300,10 @@ while not gameOver:
         if nextEnemyCreate < time.time():
             if createEnemies(index):
                 nextEnemyCreate = time.time() + difficultyTime
-                index += 1
+                index += 3
                 difficultyTime -= 0.5
         drawEnemies()
         handleEnemy()
 
     pygame.display.flip()
+    fpsClock.tick(FPS)
