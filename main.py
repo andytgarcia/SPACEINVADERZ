@@ -7,6 +7,7 @@ import random
 YELLOW = (255, 255, 0)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
 currentTime = time.time()
 gameState = "start"
 
@@ -24,6 +25,7 @@ class Player(pygame.sprite.Sprite):
         self.spreadPower = False
         self.rapidPower = False
         self.health = 90
+        self.score = 0
 
     def moveUp(self):
         if self.rect.y == 0:
@@ -76,7 +78,7 @@ class Event(pygame.sprite.Sprite):
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         self.x = 1279
-        self.y = random.randint(1, 670)
+        self.y = random.randrange(10, 671, 50) 
         self.nextShot = 0
         self.health = 100
         self.image = pygame.image.load("invader.png").convert()
@@ -84,13 +86,17 @@ class Enemy(pygame.sprite.Sprite):
         # center=(1279, random.randint(1, 670))
         self.isAlive = True
         self.bulletList = []
+        self.type = random.randrange(1, 4)
 
     def updateEnemyBullets(self):
+        global gameState
         for b in self.bulletList:
             if b.rect.colliderect(player.rect) and b.owner == self:
                 print("collision")
                 self.bulletList.remove(b)
                 player.health -= b.damage
+                if player.health <= 0:
+                    gameState = "end"
 
     def getRect(self):
         return self.rect
@@ -108,7 +114,7 @@ class Enemy(pygame.sprite.Sprite):
 def handleEnemy():
     for en in enemies:
         if en.nextShot < time.time_ns():
-            en.bulletList.append(Bullet(en.rect.x + 51, en.rect.y + 25, 5, -10, RED, 30, en))
+            en.bulletList.append(Bullet(en.rect.x + 51, en.rect.y + 25, 5, enemyBulletVelocity, RED, 30, en))
             en.nextShot = time.time_ns() + 10000000000/2
 
         if not en.isAlive:
@@ -128,8 +134,15 @@ def createEnemies(index):
 def drawEnemies():
     for en in enemies:
         screen.blit(en.image, en.rect)
-        while en.rect.x != 1150:
-            en.rect.x -= 1
+        if en.type == 1:
+            while en.rect.x != 1149:
+                en.rect.x -= 1
+        elif en.type == 2:
+            while en.rect.x != 1200:
+                en.rect.x -= 1
+        else:
+            while en.rect.x != 1050:
+                en.rect.x -= 1    
 
 
 def createEvent():
@@ -183,6 +196,7 @@ def drawEvents(events):
                 else:
                     player.spreadPower = False
                     player.rapidPower = False
+                    player.health = 90
             elif e.rapidFire:
                 if not player.rapidPower:
                     player.spreadPower = False
@@ -190,6 +204,7 @@ def drawEvents(events):
                 else:
                     player.rapidPower = False
                     player.spreadPower = False
+                    player.health = 90
             events.remove(e)
         if isOffScreen(e.rect.x, e.rect.y):
             events.remove(e)
@@ -210,11 +225,14 @@ def updatePlayerBullets():
     for b in bullets:
         for en in enemies:
             if en.rect.colliderect(b.rect):
-                print("collision")
-                bullets.remove(b)
+                try:
+                    bullets.remove(b)
+                except ValueError:
+                    print("")
                 en.health = en.health - b.damage
                 if en.health <= 0:
                     en.isAlive = False
+                    player.score += 100
 
 
 def startScreen():
@@ -222,16 +240,65 @@ def startScreen():
     screen.blit(backdrop, (0, 0))
     textSurface = bigFont.render("SPACE INVADERZ", True, WHITE)
     screen.blit(textSurface, (400, 200))
-    textSurface = littleFont.render("Press Space to Start Game!", True, WHITE)
+    textSurface = littleFont.render("Press Enter to Start Game!", True, WHITE)
     screen.blit(textSurface, (500, 450))
 
 
 def checkStartScreenKeyPresses():
     global gameState
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_SPACE]:
+    if keys[pygame.K_RETURN]:
         gameState = "playing"
 
+
+def drawScoreAndHealth():
+    textSurface = littleFont.render("Score: " + str(player.score), True, WHITE)
+    screen.blit(textSurface, (20, 10))
+    if player.health == 90:
+        textSurface = littleFont.render("Health: " + str(player.health), True, GREEN)
+        screen.blit(textSurface, (20, 50))
+    if player.health == 60:
+        textSurface = littleFont.render("Health: " + str(player.health), True, YELLOW)
+        screen.blit(textSurface, (20, 50))
+    if player.health == 30:
+        textSurface = littleFont.render("Health: " + str(player.health), True, RED)
+        screen.blit(textSurface, (20, 50))
+    
+def endScreen():
+    global gameState
+    textSurface = bigFont.render("GAME OVER!", True, WHITE)
+    screen.blit(textSurface, (475, 200))
+    textSurface = littleFont.render("Your Score: " + str(player.score), True, WHITE)
+    screen.blit(textSurface, (550, 450))
+    textSurface = littleFont.render("Press Enter to Play Again", True, WHITE)
+    screen.blit(textSurface, (500, 500))
+    
+def checkEndScreenPresses():
+    global gameState
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_RETURN]:
+        reset()
+        gameState = "playing"
+        
+        
+def reset():
+    player.rect.x = 50
+    player.rect.y = 320
+    player.normalFire = True
+    player.spreadPower = False
+    player.rapidPower = False
+    player.health = 90
+    player.score = 0
+    bullets.clear()
+    enemies.clear()
+    events.clear()
+    index = 50
+    difficultyTime = 10.0
+    counter = 5
+    decTime = 2
+    enemyBulletVelocity = -10
+
+    
 
 def clearScreen():
     pygame.draw.rect(screen, pygame.Color(0, 0, 0), (0, 0, 1280, 720))
@@ -260,10 +327,11 @@ i = 0
 bullets = []
 events = []
 enemies = []
-index = 30
-difficultyTime = 25.0
+index = 50
+difficultyTime = 10.0
 counter = 5
-decTime = 2.5
+decTime = 2
+enemyBulletVelocity = -10
 
 while not gameOver:
     for event in pygame.event.get():
@@ -273,7 +341,11 @@ while not gameOver:
     if gameState == "start":
         checkStartScreenKeyPresses()
         startScreen()
-
+        
+    if gameState == "end":
+        endScreen()
+        checkEndScreenPresses()
+        
     if gameState == "playing":
 
         # main game commands
@@ -290,6 +362,7 @@ while not gameOver:
         playerMovement()
         drawBullets(bullets)
         updatePlayerBullets()
+        drawScoreAndHealth()
 
 
         # event handling
@@ -302,14 +375,19 @@ while not gameOver:
         if nextEnemyCreate < time.time():
             if createEnemies(index):
                 nextEnemyCreate = time.time() + difficultyTime
-                index = index + counter
-                difficultyTime = difficultyTime - decTime
-                if index == 75:
+                if player.score % 500 == 0:
+                    index += counter
+                    difficultyTime -= decTime
+                if player.score % 10000 == 0 and player.score > 0:
+                    enemyBulletVelocity -= 10
+                if index <=75:
                     counter = 0
+                if difficultyTime == 2:
                     decTime = 0
+                
                     
         drawEnemies()
         handleEnemy()
-
+        
     pygame.display.flip()
     fpsClock.tick(FPS)
