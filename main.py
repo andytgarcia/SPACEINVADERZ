@@ -44,7 +44,7 @@ class Player(pygame.sprite.Sprite):
 
 class Bullet:
     def __init__(self, x, y, rad, xvel, color, damage, owner):
-        print("bullet made")
+        #print("bullet made")
         self.x = x
         self.y = y
         self.rad = rad
@@ -92,7 +92,7 @@ class Enemy(pygame.sprite.Sprite):
         global gameState
         for b in self.bulletList:
             if b.rect.colliderect(player.rect) and b.owner == self:
-                print("collision")
+                #print("collision")
                 self.bulletList.remove(b)
                 player.health -= b.damage
                 if player.health <= 0:
@@ -127,7 +127,7 @@ def createEnemies(index):
     randNum = random.randint(1, 100)
     if randNum < index:
         enemies.append(Enemy())
-        print("enemy created")
+        #print("enemy created")
         return True
 
 
@@ -150,11 +150,11 @@ def createEvent():
     if randNum < 10:
         if randNum % 2 == 1:
             events.append(Event(True, False))
-            print("spreadshot created")
+            #print("spreadshot created")
             return True
         else:
             events.append(Event(False, True))
-            print("rapid created")
+            #print("rapid created")
             return True
     return False
 
@@ -208,7 +208,7 @@ def drawEvents(events):
             events.remove(e)
         if isOffScreen(e.rect.x, e.rect.y):
             events.remove(e)
-            print("event removed")
+            #print("event removed")
 
 
 def drawBullets(bulletList):
@@ -218,7 +218,7 @@ def drawBullets(bulletList):
         b.rect.x += b.xvel
         if isOffScreen(b.x, b.y):
             bulletList.remove(b)
-            print("bullet removed")
+            #print("bullet removed")
 
 
 def updatePlayerBullets():
@@ -306,7 +306,9 @@ def clearScreen():
 
 # start of program
 pygame.init()  # start engine
-pygame.font.init()
+pygame.font.init() #start font 
+pygame.mixer.init() #start sound
+
 bigFont = pygame.font.SysFont('Times New Roman', 50)
 littleFont = pygame.font.SysFont('Arial', 18)
 FPS = 60  # 60 frames per second
@@ -314,6 +316,7 @@ fpsClock = pygame.time.Clock()
 worldx = 1280
 worldy = 720
 screen = pygame.display.set_mode((worldx, worldy))
+pygame.display.set_caption("SPACE INVADERS")
 gameOver = False
 grav = 1
 backdrop = pygame.image.load("spaceFinal.jpg").convert()
@@ -355,7 +358,7 @@ while not gameOver:
         if i == -worldx:
             screen.blit(backdrop, [worldx + i, 0])
             i = 0
-        i -= 2
+        i -= 2 #1
 
         # playerhandling
         screen.blit(player.image, player.rect)
@@ -375,15 +378,15 @@ while not gameOver:
         if nextEnemyCreate < time.time():
             if createEnemies(index):
                 nextEnemyCreate = time.time() + difficultyTime
-                if player.score % 500 == 0:
-                    index += counter
-                    difficultyTime -= decTime
-                if player.score % 10000 == 0 and player.score > 0:
-                    enemyBulletVelocity -= 10
-                if index <=75:
-                    counter = 0
-                if difficultyTime == 2:
-                    decTime = 0
+        if player.score % 500 == 0:
+            index += counter
+            difficultyTime -= decTime
+        if player.score % 10000 == 0 and player.score > 0:
+            enemyBulletVelocity = -20
+        if index <=75:
+             counter = 0
+        if difficultyTime == 2:
+            decTime = 0
                 
                     
         drawEnemies()
