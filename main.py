@@ -34,7 +34,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.y -= self.movey
 
     def moveDown(self):
-        if self.rect.y == 660:
+        if self.rect.y >= 660:
             print("border!!!")
             self.rect.y += 0
         else:
