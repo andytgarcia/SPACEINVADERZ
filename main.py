@@ -115,7 +115,7 @@ def handleEnemy():
     for en in enemies:
         if en.nextShot < time.time_ns():
             en.bulletList.append(Bullet(en.rect.x + 51, en.rect.y + 25, 5, enemyBulletVelocity, RED, 30, en))
-            en.nextShot = time.time_ns() + 10000000000/2
+            en.nextShot = time.time_ns() + (enemyFireRate/2)
 
         if not en.isAlive:
             enemies.remove(en)
@@ -335,6 +335,7 @@ difficultyTime = 10.0
 counter = 5
 decTime = 2
 enemyBulletVelocity = -10
+enemyFireRate = 10_000_000_000
 
 while not gameOver:
     for event in pygame.event.get():
@@ -381,8 +382,10 @@ while not gameOver:
         if player.score % 500 == 0:
             index += counter
             difficultyTime -= decTime
-        if player.score % 10000 == 0 and player.score > 0:
+        if player.score >= 10000 and player.score > 0:
             enemyBulletVelocity = -20
+        if player.score >= 20000:
+            enemyFireRate = 1_000_000_000 
         if index <=75:
              counter = 0
         if difficultyTime == 2:
