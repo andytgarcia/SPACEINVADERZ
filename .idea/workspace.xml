@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c5ab89e8-4e7d-4b54-8352-8b10dbb294c3" name="Changes" comment="change speeds and fix bottom border glitch">
+    <list default="true" id="c5ab89e8-4e7d-4b54-8352-8b10dbb294c3" name="Changes" comment="final commit, everything works">
+      <change afterPath="$PROJECT_DIR$/8d82b5_Galaga_Firing_Sound_Effect.mp3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -180,7 +181,14 @@
       <option name="project" value="LOCAL" />
       <updated>1676055061885</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="final commit, everything works">
+      <created>1676314248095</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1676314248095</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -209,6 +217,7 @@
     <MESSAGE value="handle enemies &amp; health/damage" />
     <MESSAGE value="do health/damage" />
     <MESSAGE value="change speeds and fix bottom border glitch" />
-    <option name="LAST_COMMIT_MESSAGE" value="change speeds and fix bottom border glitch" />
+    <MESSAGE value="final commit, everything works" />
+    <option name="LAST_COMMIT_MESSAGE" value="final commit, everything works" />
   </component>
 </project>

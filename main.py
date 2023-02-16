@@ -3,6 +3,7 @@ import threading
 import pygame
 import time
 import random
+import os
 
 YELLOW = (255, 255, 0)
 RED = (255, 0, 0)
@@ -10,6 +11,7 @@ WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 currentTime = time.time()
 gameState = "start"
+s = 'sound'
 
 
 ##fields for player: x position, y position
@@ -44,7 +46,7 @@ class Player(pygame.sprite.Sprite):
 
 class Bullet:
     def __init__(self, x, y, rad, xvel, color, damage, owner):
-        #print("bullet made")
+        # print("bullet made")
         self.x = x
         self.y = y
         self.rad = rad
@@ -73,12 +75,10 @@ class Event(pygame.sprite.Sprite):
         return self.rapidFire
 
 
-
-
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         self.x = 1279
-        self.y = random.randrange(10, 671, 50) 
+        self.y = random.randrange(10, 671, 50)
         self.nextShot = 0
         self.health = 100
         self.image = pygame.image.load("invader.png").convert()
@@ -92,7 +92,7 @@ class Enemy(pygame.sprite.Sprite):
         global gameState
         for b in self.bulletList:
             if b.rect.colliderect(player.rect) and b.owner == self:
-                #print("collision")
+                # print("collision")
                 self.bulletList.remove(b)
                 player.health -= b.damage
                 if player.health <= 0:
@@ -102,7 +102,7 @@ class Enemy(pygame.sprite.Sprite):
         return self.rect
 
     def setHealth(self, health):
-        self.heath = health
+        self.health = health
 
     def getHealth(self):
         return self.health
@@ -115,7 +115,7 @@ def handleEnemy():
     for en in enemies:
         if en.nextShot < time.time_ns():
             en.bulletList.append(Bullet(en.rect.x + 51, en.rect.y + 25, 5, enemyBulletVelocity, RED, 30, en))
-            en.nextShot = time.time_ns() + (enemyFireRate/2)
+            en.nextShot = time.time_ns() + (enemyFireRate / 2)
 
         if not en.isAlive:
             enemies.remove(en)
@@ -127,7 +127,7 @@ def createEnemies(index):
     randNum = random.randint(1, 100)
     if randNum < index:
         enemies.append(Enemy())
-        #print("enemy created")
+        # print("enemy created")
         return True
 
 
@@ -142,7 +142,7 @@ def drawEnemies():
                 en.rect.x -= 1
         else:
             while en.rect.x != 1050:
-                en.rect.x -= 1    
+                en.rect.x -= 1
 
 
 def createEvent():
@@ -150,11 +150,11 @@ def createEvent():
     if randNum < 10:
         if randNum % 2 == 1:
             events.append(Event(True, False))
-            #print("spreadshot created")
+            # print("spreadshot created")
             return True
         else:
             events.append(Event(False, True))
-            #print("rapid created")
+            # print("rapid created")
             return True
     return False
 
@@ -174,7 +174,8 @@ def playerMovement():
         if not player.rapidPower:
             player.nextShot = time.time_ns() + 1000000000 / 2
         else:
-            player.nextShot = time.time_ns() + 100000000/2
+            player.nextShot = time.time_ns() + 100000000 / 2
+        pygame.mixer.Sound.play(fire)
 
 
 def isOffScreen(x, y):
@@ -208,7 +209,7 @@ def drawEvents(events):
             events.remove(e)
         if isOffScreen(e.rect.x, e.rect.y):
             events.remove(e)
-            #print("event removed")
+            # print("event removed")
 
 
 def drawBullets(bulletList):
@@ -218,7 +219,7 @@ def drawBullets(bulletList):
         b.rect.x += b.xvel
         if isOffScreen(b.x, b.y):
             bulletList.remove(b)
-            #print("bullet removed")
+            # print("bullet removed")
 
 
 def updatePlayerBullets():
@@ -263,7 +264,8 @@ def drawScoreAndHealth():
     if player.health == 30:
         textSurface = littleFont.render("Health: " + str(player.health), True, RED)
         screen.blit(textSurface, (20, 50))
-    
+
+
 def endScreen():
     global gameState
     textSurface = bigFont.render("GAME OVER!", True, WHITE)
@@ -272,15 +274,16 @@ def endScreen():
     screen.blit(textSurface, (550, 450))
     textSurface = littleFont.render("Press Enter to Play Again", True, WHITE)
     screen.blit(textSurface, (500, 500))
-    
+
+
 def checkEndScreenPresses():
     global gameState
     keys = pygame.key.get_pressed()
     if keys[pygame.K_RETURN]:
         reset()
         gameState = "playing"
-        
-        
+
+
 def reset():
     player.rect.x = 50
     player.rect.y = 320
@@ -298,7 +301,6 @@ def reset():
     decTime = 2
     enemyBulletVelocity = -10
 
-    
 
 def clearScreen():
     pygame.draw.rect(screen, pygame.Color(0, 0, 0), (0, 0, 1280, 720))
@@ -306,8 +308,13 @@ def clearScreen():
 
 # start of program
 pygame.init()  # start engine
-pygame.font.init() #start font 
-pygame.mixer.init() #start sound
+pygame.font.init()  # start font
+pygame.mixer.init()  # start sound
+
+
+#sound
+fire = pygame.mixer.Sound(os.path.join('8d82b5_Galaga_Firing_Sound_Effect.mp3'))
+
 
 bigFont = pygame.font.SysFont('Times New Roman', 50)
 littleFont = pygame.font.SysFont('Arial', 18)
@@ -345,11 +352,11 @@ while not gameOver:
     if gameState == "start":
         checkStartScreenKeyPresses()
         startScreen()
-        
+
     if gameState == "end":
         endScreen()
         checkEndScreenPresses()
-        
+
     if gameState == "playing":
 
         # main game commands
@@ -359,7 +366,7 @@ while not gameOver:
         if i == -worldx:
             screen.blit(backdrop, [worldx + i, 0])
             i = 0
-        i -= 2 #1
+        i -= 2  # 1
 
         # playerhandling
         screen.blit(player.image, player.rect)
@@ -367,7 +374,6 @@ while not gameOver:
         drawBullets(bullets)
         updatePlayerBullets()
         drawScoreAndHealth()
-
 
         # event handling
         if nextTimeEvent < time.time():
@@ -385,15 +391,14 @@ while not gameOver:
         if player.score >= 10000 and player.score > 0:
             enemyBulletVelocity = -20
         if player.score >= 20000:
-            enemyFireRate = 1_000_000_000 
-        if index <=75:
-             counter = 0
+            enemyFireRate = 1_000_000_000
+        if index <= 75:
+            counter = 0
         if difficultyTime == 2:
             decTime = 0
-                
-                    
+
         drawEnemies()
         handleEnemy()
-        
+
     pygame.display.flip()
     fpsClock.tick(FPS)
