@@ -37,7 +37,7 @@ class Player(pygame.sprite.Sprite):
 
     def moveDown(self):
         if self.rect.y >= 660:
-            print("border!!!")
+            #print("border!!!")
             self.rect.y += 0
         else:
             self.rect.y += self.movey
@@ -194,18 +194,22 @@ def drawEvents(events):
                 if not player.spreadPower:
                     player.spreadPower = True
                     player.rapidPower = False
+                    pygame.mixer.Sound.play(eventAcquire)
                 else:
                     player.spreadPower = False
                     player.rapidPower = False
                     player.health = 90
+                    pygame.mixer.Sound.play(healthBoost)
             elif e.rapidFire:
                 if not player.rapidPower:
                     player.spreadPower = False
                     player.rapidPower = True
+                    pygame.mixer.Sound.play(eventAcquire)
                 else:
                     player.rapidPower = False
                     player.spreadPower = False
                     player.health = 90
+                    pygame.mixer.Sound.play(healthBoost)
             events.remove(e)
         if isOffScreen(e.rect.x, e.rect.y):
             events.remove(e)
@@ -312,8 +316,10 @@ pygame.font.init()  # start font
 pygame.mixer.init()  # start sound
 
 
-#sound
+#sounds
 fire = pygame.mixer.Sound(os.path.join('8d82b5_Galaga_Firing_Sound_Effect.mp3'))
+eventAcquire = pygame.mixer.Sound(os.path.join('4.mp3'))
+healthBoost = pygame.mixer.Sound(os.path.join('5.mp3'))
 
 
 bigFont = pygame.font.SysFont('Times New Roman', 50)
