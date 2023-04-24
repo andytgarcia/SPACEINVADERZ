@@ -244,9 +244,9 @@ def startScreen():
     clearScreen()
     screen.blit(backdrop, (0, 0))
     textSurface = bigFont.render("SPACE INVADERZ", True, WHITE)
-    screen.blit(textSurface, (400, 200))
+    screen.blit(textSurface, (430, 200))
     textSurface = littleFont.render("Press Enter to Start Game!", True, WHITE)
-    screen.blit(textSurface, (500, 450))
+    screen.blit(textSurface, (545, 450))
 
 
 def checkStartScreenKeyPresses():
@@ -273,11 +273,11 @@ def drawScoreAndHealth():
 def endScreen():
     global gameState
     textSurface = bigFont.render("GAME OVER!", True, WHITE)
-    screen.blit(textSurface, (475, 200))
+    screen.blit(textSurface, (450, 200))
     textSurface = littleFont.render("Your Score: " + str(player.score), True, WHITE)
     screen.blit(textSurface, (550, 450))
     textSurface = littleFont.render("Press Enter to Play Again", True, WHITE)
-    screen.blit(textSurface, (500, 500))
+    screen.blit(textSurface, (515, 500))
 
 
 def checkEndScreenPresses():
@@ -360,8 +360,8 @@ while not gameOver:
         startScreen()
 
     if gameState == "end":
-        endScreen()
         checkEndScreenPresses()
+        endScreen()
 
     if gameState == "playing":
 
