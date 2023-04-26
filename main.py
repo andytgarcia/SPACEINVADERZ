@@ -37,7 +37,7 @@ class Player(pygame.sprite.Sprite):
 
     def moveDown(self):
         if self.rect.y >= 660:
-            #print("border!!!")
+            # print("border!!!")
             self.rect.y += 0
         else:
             self.rect.y += self.movey
@@ -159,6 +159,8 @@ def createEvent():
     return False
 
 
+# access player movement using "W" and "S" and handle player firing with spacebar; if there are certain powers
+# acquired, fire with the appropriate bullet size and fire rate by adding bullets to bulletlist.
 def playerMovement():
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
@@ -185,6 +187,8 @@ def isOffScreen(x, y):
         return False
 
 
+# this function takes in a list "events" of type Event, iterates through the list, draws each event, and checks for
+# collision; if the powerup is already aquired, make fire rate normal and health boost, else change fire mode.
 def drawEvents(events):
     for e in events:
         screen.blit(e.image, e.rect)
@@ -213,9 +217,10 @@ def drawEvents(events):
             events.remove(e)
         if isOffScreen(e.rect.x, e.rect.y):
             events.remove(e)
-            # print("event removed")
 
 
+# iterate through bullet list and draw the bullets on screen accessing
+# Bullet class and its properties (x-position, y-position, color, radius, and velocity)
 def drawBullets(bulletList):
     for b in bulletList:
         pygame.draw.circle(screen, b.color, (b.x, b.y), b.rad, 0)
@@ -223,9 +228,10 @@ def drawBullets(bulletList):
         b.rect.x += b.xvel
         if isOffScreen(b.x, b.y):
             bulletList.remove(b)
-            # print("bullet removed")
 
 
+# iterates through the player bullets and check for contact with enemy,
+# accessing the bullets hurtbox and its damage value
 def updatePlayerBullets():
     for b in bullets:
         for en in enemies:
@@ -315,12 +321,10 @@ pygame.init()  # start engine
 pygame.font.init()  # start font
 pygame.mixer.init()  # start sound
 
-
-#sounds
+# sounds
 fire = pygame.mixer.Sound(os.path.join('8d82b5_Galaga_Firing_Sound_Effect.mp3'))
 eventAcquire = pygame.mixer.Sound(os.path.join('4.mp3'))
 healthBoost = pygame.mixer.Sound(os.path.join('5.mp3'))
-
 
 bigFont = pygame.font.SysFont('Times New Roman', 50)
 littleFont = pygame.font.SysFont('Arial', 18)
